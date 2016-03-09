@@ -12,7 +12,6 @@ class TehnickiMuzej(Source):
         return 'http://tehnicki-muzej.hr/hr/kalendar/'
 
     def parse(self, content):
-        print content
         return_data = []
         events = content.find_all('div', class_='col-sm-6')
         for event in reversed(events):
@@ -31,8 +30,6 @@ class TehnickiMuzej(Source):
             else:
                 continue
 
-        from pprint import pprint
-        pprint(return_data)
         return return_data
 
     def email_message(self, data):
