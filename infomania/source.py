@@ -29,7 +29,7 @@ class Source(object):
         return DEFAULT_MAIL_FROM
 
     def email_to(self):
-        return DEFAULT_MAIL_TO
+        return DEFAULT_MAIL_TO.split(',')
 
     def email_message(self, data):
         pass

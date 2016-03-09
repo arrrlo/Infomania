@@ -4,7 +4,7 @@ import os
 
 
 DEFAULT_MAIL_FROM = os.environ['INFOMANIA_MAIL_FROM']
-DEFAULT_MAIL_TO = os.environ['INFOMANIA_MAIL_TO'].split(',')
+DEFAULT_MAIL_TO = os.environ['INFOMANIA_MAIL_TO']
 DEFAULT_MAIL_SUBJECT = '------- {} -------'
 
 SMTP_SERVER = os.environ['INFOMANIA_SMTP_SERVER']
