@@ -69,16 +69,25 @@ class Mania(object):
 
             for source in self.sources:
                 if len(source.events) > 0:
+
+                    if isinstance(source.e_to, str):
+                        source.e_to = source.e_to.split(',')
+
                     for e_to in source.e_to:
                         message_contents = [
                             source.e_from,
                             e_to,
                             source.e_subject,
-                            '\n'.join(source.events),
+                            '\n\n'.join(source.events),
                         ]
-                        message = """\nFrom: {}\nTo: {}\nSubject: {}\n\n{}""".format(*message_contents)
+                        message = """\
+From: {}
+To: {}
+Subject: {}
+
+{}""".format(*message_contents)
                         email_server.sendmail(source.e_from, [e_to], message)
             
             email_server.quit()
-        else:
-            return self.sources
+        
+        return self.sources

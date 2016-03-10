@@ -13,7 +13,8 @@ class TehnickiMuzej(Source):
 
     def parse(self, content):
         return_data = []
-        events = content.find_all('div', class_='col-sm-6')
+        events = content.find('div', id='center').find_all('div', class_='d')
+
         for event in reversed(events):
             date_title = event.find('b').text.encode('utf-8')
             date, title = (str_.strip() for str_ in date_title.split('|'))
