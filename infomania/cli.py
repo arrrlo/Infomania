@@ -4,6 +4,7 @@ import click
 
 from .mania import Mania
 from .klinfo import Klinfo
+from .dollarkuna import DollarKuna
 from .tehnicki_muzej import TehnickiMuzej
 
 
@@ -19,6 +20,7 @@ def cli(mania, email):
 def all(mania):
     mania.obj.set_source(Klinfo())
     mania.obj.set_source(TehnickiMuzej())
+    mania.obj.set_source(DollarKuna())
     sources = mania.obj.run()
 
     print('')
@@ -46,6 +48,18 @@ def klinfo(mania):
 @click.pass_context
 def tehnickimuzej(mania):
     mania.obj.set_source(TehnickiMuzej())
+    sources = mania.obj.run()
+
+    print('')
+    for source in sources:
+        print('\n\n'.join(source.events))
+        print('')
+
+
+@cli.command()
+@click.pass_context
+def dollarkuna(mania):
+    mania.obj.set_source(DollarKuna())
     sources = mania.obj.run()
 
     print('')

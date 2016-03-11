@@ -36,7 +36,18 @@ class Mania(object):
                 db_write = open('{}.txt'.format(source.name), 'a')
 
             events = source.parse(parsed_html)
+
+            if type(events) is not list:
+                events = [events,]
+
             for event in reversed(events):
+
+                if type(event) is not dict:
+                    event = {'title': event}
+
+                if 'date' not in event:
+                    event['date'] = datetime.now().strftime('%d.%m.%Y')
+
                 date_title = '{} {}'.format(event['date'], event['title'])
                 
                 if self.email:
@@ -45,14 +56,14 @@ class Mania(object):
                     else:
                         db_write.write(date_title+';')
                 
-                date_list = map(int, reversed(event['date'].split('.'))) + [0, 0, 0]
+                date_list = map(int, reversed(event['date'].split('.')[:3])) + [0, 0, 0]
                 date_obj = datetime(*date_list)
 
                 now = datetime.now()
                 now_list = [now.year, now.month, now.day, 0, 0, 0]
                 now_obj = datetime(*now_list)
 
-                if date_obj > now_obj:
+                if date_obj >= now_obj:
                     source.events.append(source.email_message(data=event))
 
         if self.email:
