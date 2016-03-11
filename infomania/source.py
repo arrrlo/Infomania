@@ -1,7 +1,9 @@
 
 
-from .settings import DEFAULT_MAIL_FROM, DEFAULT_MAIL_TO, DEFAULT_MAIL_SUBJECT
+import os
 
+
+DEFAULT_MAIL_SUBJECT = '------- {} -------'
 
 class Source(object):
 
@@ -26,10 +28,10 @@ class Source(object):
         return DEFAULT_MAIL_SUBJECT.format(self.name)
 
     def email_from(self):
-        return DEFAULT_MAIL_FROM
+        return os.environ['INFOMANIA_MAIL_FROM']
 
     def email_to(self):
-        return DEFAULT_MAIL_TO
+        return os.environ['INFOMANIA_MAIL_TO']
 
     def email_message(self, data):
         pass
