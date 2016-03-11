@@ -6,7 +6,7 @@ import requests
 from datetime import datetime
 from bs4 import BeautifulSoup
 
-from .settings import SMTP_SERVER, SMTP_USERNAME, SMTP_PASSWORD
+import settings
 
 
 class Mania(object):
@@ -73,10 +73,10 @@ class Mania(object):
 
     def output(self):
         if self.email:
-            email_server = smtplib.SMTP(SMTP_SERVER)
+            email_server = smtplib.SMTP(settings.SMTP_SERVER)
             email_server.ehlo()
             email_server.starttls()
-            email_server.login(SMTP_USERNAME, SMTP_PASSWORD)
+            email_server.login(settings.SMTP_USERNAME, settings.SMTP_PASSWORD)
 
             for source in self.sources:
                 if len(source.events) > 0:
