@@ -11,8 +11,6 @@ class Source(object):
         self.name = self.source_name()
         self.url = self.source_url()
         self.e_subject = self.email_subject()
-        self.e_from = self.email_from()
-        self.e_to = self.email_to()
         self.events = []
 
     def source_name(self):
@@ -26,12 +24,6 @@ class Source(object):
 
     def email_subject(self):
         return DEFAULT_MAIL_SUBJECT.format(self.name)
-
-    def email_from(self):
-        return os.environ['INFOMANIA_MAIL_FROM']
-
-    def email_to(self):
-        return os.environ['INFOMANIA_MAIL_TO']
 
     def email_message(self, data):
         pass

@@ -1,0 +1,3 @@
+[console_scripts]
+infomania = infomania.cli:cli
+

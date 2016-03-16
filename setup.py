@@ -3,7 +3,7 @@ from setuptools import setup
 setup(
     name = 'Infomania',
     description = 'Get updates about events from various websites',
-    version = "0.1",
+    version = "0.2",
     url = 'https://github.com/arrrlo/infomania',
 
     author = 'Ivan Arar',

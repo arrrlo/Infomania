@@ -9,9 +9,17 @@ from bs4 import BeautifulSoup
 
 class Mania(object):
 
-    def __init__(self, email=True):
+    def __init__(self, from_=None, to=None, host=None, username=None, password=None):
         self.sources = []
-        self.email = email
+
+        self.email_to = os.environ.get('INFOMANIA_MAIL_TO', to)
+        if type(self.email_to) is str:
+            self.email_to = [self.email_to]
+
+        self.email_from = os.environ.get('INFOMANIA_MAIL_FROM', from_)
+        self.email_host = os.environ.get('INFOMANIA_SMTP_SERVER', host)
+        self.email_usernam = os.environ.get('INFOMANIA_SMTP_USERNAME', username)
+        self.email_password = os.environ.get('INFOMANIA_SMTP_PASSWORD', password)
 
     def set_source(self, source):
         self.sources.append(source)
@@ -28,12 +36,15 @@ class Mania(object):
             source_code = requests.get(source.url).content
             parsed_html = BeautifulSoup(source_code, 'html.parser')
 
-            if self.email:
+            if self.email_host:
                 os.system('touch {}.txt'.format(source.name))
                 db_read = open('{}.txt'.format(source.name), 'r').readline()
                 db_write = open('{}.txt'.format(source.name), 'a')
 
-            events = source.parse(parsed_html)
+            try:
+                events = source.parse(parsed_html)
+            except:
+                raise Exception('Error parsing ' + source.name + '\' HTML')
 
             if type(events) is not list:
                 events = [events,]
@@ -48,13 +59,17 @@ class Mania(object):
 
                 date_title = '{} {}'.format(event['date'], event['title'])
                 
-                if self.email:
+                if self.email_host:
                     if date_title in db_read:
                         continue
                     else:
                         db_write.write(date_title+';')
-                
-                date_list = map(int, reversed(event['date'].split('.')[:3])) + [0, 0, 0]
+
+                try:
+                    date_list = map(int, reversed(event['date'].split('.')[:3])) + [0, 0, 0]
+                except:
+                    continue
+
                 date_obj = datetime(*date_list)
 
                 now = datetime.now()
@@ -64,27 +79,23 @@ class Mania(object):
                 if date_obj >= now_obj:
                     source.events.append(source.email_message(data=event))
 
-        if self.email:
+        if self.email_host:
             db_write.close()
             
         return self.output()
 
     def output(self):
-        if self.email:
-            email_server = smtplib.SMTP(os.environ['INFOMANIA_SMTP_SERVER'])
+        if self.email_host:
+            email_server = smtplib.SMTP(self.email_host)
             email_server.ehlo()
             email_server.starttls()
-            email_server.login(os.environ['INFOMANIA_SMTP_USERNAME'], os.environ['INFOMANIA_SMTP_PASSWORD'])
+            email_server.login(self.email_usernam, self.email_password)
 
             for source in self.sources:
                 if len(source.events) > 0:
-
-                    if isinstance(source.e_to, str):
-                        source.e_to = source.e_to.split(',')
-
-                    for e_to in source.e_to:
+                    for e_to in self.email_to:
                         message_contents = [
-                            source.e_from,
+                            self.email_from,
                             e_to,
                             source.e_subject,
                             '\n\n'.join(source.events),
@@ -95,7 +106,7 @@ To: {}
 Subject: {}
 
 {}""".format(*message_contents)
-                        email_server.sendmail(source.e_from, [e_to], message)
+                        email_server.sendmail(self.email_from, [e_to], message)
             
             email_server.quit()
         
