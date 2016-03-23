@@ -9,13 +9,14 @@ from bs4 import BeautifulSoup
 
 class Mania(object):
 
-    def __init__(self, from_=None, to=None, host=None, username=None, password=None):
+    def __init__(self, send_email=None, from_=None, to=None, host=None, username=None, password=None):
         self.sources = []
 
         self.email_to = os.environ.get('INFOMANIA_MAIL_TO', to)
         if type(self.email_to) is str:
             self.email_to = [self.email_to]
 
+        self.send_email = send_email
         self.email_from = os.environ.get('INFOMANIA_MAIL_FROM', from_)
         self.email_host = os.environ.get('INFOMANIA_SMTP_SERVER', host)
         self.email_usernam = os.environ.get('INFOMANIA_SMTP_USERNAME', username)
@@ -36,7 +37,7 @@ class Mania(object):
             source_code = requests.get(source.url).content
             parsed_html = BeautifulSoup(source_code, 'html.parser')
 
-            if self.email_host:
+            if self.send_email:
                 os.system('touch {}.txt'.format(source.name))
                 db_read = open('{}.txt'.format(source.name), 'r').readline()
                 db_write = open('{}.txt'.format(source.name), 'a')
@@ -59,7 +60,7 @@ class Mania(object):
 
                 date_title = '{} {}'.format(event['date'], event['title'])
                 
-                if self.email_host:
+                if self.send_email:
                     if date_title in db_read:
                         continue
                     else:
@@ -79,13 +80,13 @@ class Mania(object):
                 if date_obj >= now_obj:
                     source.events.append(source.email_message(data=event))
 
-        if self.email_host:
+        if self.send_email:
             db_write.close()
             
         return self.output()
 
     def output(self):
-        if self.email_host:
+        if self.send_email:
             email_server = smtplib.SMTP(self.email_host)
             email_server.ehlo()
             email_server.starttls()
