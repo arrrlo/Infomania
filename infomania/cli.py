@@ -14,7 +14,7 @@ from .tehnicki_muzej import TehnickiMuzej
 @click.option('-h', '--host', type=click.STRING, help='E-mail server host')
 @click.option('-u', '--username', type=click.STRING, help='E-mail server username')
 @click.option('-p', '--password', type=click.STRING, help='E-mail server password')
-@click.option('-m', '--send_email', type=click.BOOL, help='Send e-mail or not')
+@click.option('-m', '--send_email', is_flag=True, help='Send e-mail or not')
 @click.pass_context
 def cli(mania, send_email, from_, to, host, username, password):
     if to: to = to.split(',')
