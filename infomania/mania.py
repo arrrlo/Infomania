@@ -1,6 +1,5 @@
-
-
 import os
+import click
 import smtplib
 import requests
 from datetime import datetime
@@ -9,18 +8,28 @@ from bs4 import BeautifulSoup
 
 class Mania(object):
 
-    def __init__(self, send_email=None, from_=None, to=None, host=None, username=None, password=None):
+    def __init__(self, from_=None, to=None, host=None, username=None, password=None):
         self.sources = []
 
         self.email_to = os.environ.get('INFOMANIA_MAIL_TO', to)
-        if type(self.email_to) is str:
-            self.email_to = [self.email_to]
-
-        self.send_email = send_email
-        self.email_from = os.environ.get('INFOMANIA_MAIL_FROM', from_)
         self.email_host = os.environ.get('INFOMANIA_SMTP_SERVER', host)
         self.email_usernam = os.environ.get('INFOMANIA_SMTP_USERNAME', username)
         self.email_password = os.environ.get('INFOMANIA_SMTP_PASSWORD', password)
+
+        if self.email_to is None or \
+           self.email_host is None or \
+           self.email_usernam is None or \
+           self.email_password is None:
+
+            self.send_email = False
+        else:
+            if type(self.email_to) is str:
+                self.email_to = [self.email_to]
+
+            self.send_email = True
+            self.email_from = os.environ.get('INFOMANIA_MAIL_FROM', from_)
+            if not self.email_from:
+                self.email_from = 'no-replay@infomania.com'
 
     def set_source(self, source):
         self.sources.append(source)
@@ -48,7 +57,7 @@ class Mania(object):
                 raise Exception('Error parsing ' + source.name + '\' HTML')
 
             if type(events) is not list:
-                events = [events,]
+                events = [events, ]
 
             for event in reversed(events):
 
@@ -59,7 +68,7 @@ class Mania(object):
                     event['date'] = datetime.now().strftime('%d.%m.%Y')
 
                 date_title = '{} {}'.format(event['date'], event['title'])
-                
+
                 if self.send_email:
                     if date_title in db_read:
                         continue
@@ -82,7 +91,7 @@ class Mania(object):
 
         if self.send_email:
             db_write.close()
-            
+
         return self.output()
 
     def output(self):
@@ -108,7 +117,7 @@ Subject: {}
 
 {}""".format(*message_contents)
                         email_server.sendmail(self.email_from, [e_to], message)
-            
+
             email_server.quit()
-        
+
         return self.sources
