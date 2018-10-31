@@ -3,7 +3,7 @@ from setuptools import setup
 setup(
     name='Infomania',
     description='Get updates about events from various websites',
-    version="0.3.0",
+    version="0.3.1",
     url='https://github.com/arrrlo/infomania',
 
     author='Ivan Arar',
@@ -12,7 +12,7 @@ setup(
     packages=['infomania'],
     install_requires=[
         'beautifulsoup4==4.4.0',
-        'requests==2.9.1',
+        'requests~=2.20.0',
         'click==6.3',
     ],
 

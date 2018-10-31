@@ -1,1 +1,6 @@
 *.pyc
+/.idea/
+/Infomania.egg-info/
+/dollar-kuna.txt
+/klinfo.txt
+/tehnicki-muzej.txt
